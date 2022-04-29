@@ -1,0 +1,2 @@
+- get a tile based movement system synced between client and server
+- set up event bus
