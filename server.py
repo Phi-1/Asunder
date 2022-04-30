@@ -1,12 +1,14 @@
+from uuid import uuid4
 from flask import Flask, render_template
 from flask_socketio import SocketIO, emit
 from dotenv import load_dotenv
 import os
-from src.game import Game
+from numpy import broadcast
+from src.game import Game, Click_event
 
 SERVER = Flask(__name__)
 SOCKETIO = SocketIO(SERVER)
-GAME_INSTANCE = Game()
+GAME = Game()
 
 def read_html(filepath):
     with open(filepath) as f:
@@ -18,10 +20,17 @@ def index():
 
 @SOCKETIO.on("connect")
 def user_connects(auth):
-    print(auth)
-    print("user connected")
+    if GAME.get_state() == Game.States.test or Game.get_state() == Game.States.setup:
+        player_id = uuid4()
+        GAME.add_player(player_id)
+        emit("assign_id", {"data": str(player_id)}, broadcast=True)
 
-    emit()
+@SOCKETIO.on("click")
+def on_click(event):
+    data = event["data"]
+    GAME.handle_event(Click_event(data["player_id"], data["x"], data["y"]))
+    objects = GAME.get_objects()
+    emit("update", {"data": objects}, broadcast=True)
 
 if __name__ == "__main__":
     load_dotenv()
