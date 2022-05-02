@@ -13,6 +13,10 @@ class Click_event(Event):
     y: int
 
 @dataclass
+class Connection_event(Event):
+    pass
+
+@dataclass
 class Object:
     id = str(uuid4())
     x: int

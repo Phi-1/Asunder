@@ -1,6 +1,8 @@
 //Globals
-PLAYER_ID = null
-OBJECTS = []
+let PLAYER_ID = null
+let GAME_STATE = null
+let PLAYERS = []
+let OBJECTS = []
 
 // Server events
 let socket = io()
@@ -12,8 +14,8 @@ socket.on("assign_id", (id) => {
     PLAYER_ID = id["data"]
 })
 
-socket.on("update", (event) => {
-    objects = event["data"]
+socket.on("update", (data) => {
+    objects = data["objects"]
     objects.forEach((object, i) => {
         OBJECTS.push(object)
     })

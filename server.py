@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 import os
 from numpy import broadcast
 from src.game import Game, Click_event
+from src.socket_datastructures import Update_event
 
 SERVER = Flask(__name__)
 SOCKETIO = SocketIO(SERVER)
@@ -18,19 +19,29 @@ def read_html(filepath):
 def index():
     return read_html("./index.html")
 
-@SOCKETIO.on("connect")
-def user_connects(auth):
-    if GAME.get_state() == Game.States.test or Game.get_state() == Game.States.setup:
-        player_id = uuid4()
-        GAME.add_player(player_id)
-        emit("assign_id", {"data": str(player_id)}, broadcast=True)
+# new player connects, provides callsign and ship type
+# broadcasts new player to all existing players
+@SOCKETIO.on("player_connect")
+def player_connect():
+    pass
 
-@SOCKETIO.on("click")
-def on_click(event):
-    data = event["data"]
-    GAME.handle_event(Click_event(data["player_id"], data["x"], data["y"]))
-    objects = GAME.get_objects()
-    emit("update", {"data": objects}, broadcast=True)
+# player changes affiliation, provides player id and new affiliation
+# broadcasts player id and new affiliation
+@SOCKETIO.on("player_change_affiliation")
+def player_change_affiliation():
+    pass
+
+# player presses ready or unready button in lobby, OR client has played out combat scene and is ready for next turn
+# broadcasts player id and ready state (ready/unready)
+@SOCKETIO.on("player_ready")
+def player_ready():
+    pass
+
+# player presses end turn button, provides player id and list of actions
+# broadcasts start of combat phase ONLY when all players have ended their turn
+@SOCKETIO.on("player_end_turn")
+def player_end_turn():
+    pass
 
 if __name__ == "__main__":
     load_dotenv()
