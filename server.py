@@ -3,9 +3,7 @@ from flask import Flask, render_template
 from flask_socketio import SocketIO, emit
 from dotenv import load_dotenv
 import os
-from numpy import broadcast
-from src.game import Game, Click_event
-from src.socket_datastructures import Update_event
+from src.game import Game
 
 SERVER = Flask(__name__)
 SOCKETIO = SocketIO(SERVER)
@@ -18,6 +16,15 @@ def read_html(filepath):
 @SERVER.route("/", methods=["GET"])
 def index():
     return read_html("./index.html")
+
+@SERVER.route("/lobby", methods=["GET"])
+def lobby():
+    return read_html("./game.html")
+
+# setup screen requests list of available ships
+@SOCKETIO.on("get_ship_selection")
+def get_ship_selection():
+    emit("get_ship_selection", {"ships": [{"name": "ship 1", "image": "0.png"}, {"name": "ship 2", "image": "1.png"}, {"name": "ship 3", "image": "3.png"}]}, broadcast=False)
 
 # new player connects, provides callsign and ship type
 # broadcasts new player to all existing players
@@ -47,4 +54,4 @@ if __name__ == "__main__":
     load_dotenv()
     server_ip = os.environ.get("SERVER_IP")
     server_port = os.environ.get("SERVER_PORT")
-    SOCKETIO.run(SERVER, host=server_ip, port=server_port, debug=True)
+    SOCKETIO.run(SERVER, host="0.0.0.0", port=server_port, debug=True)

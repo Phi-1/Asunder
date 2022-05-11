@@ -4,19 +4,6 @@ import json
 import uuid
 
 @dataclass
-class Event:
-    player_id: str
-
-@dataclass
-class Click_event(Event):
-    x: int
-    y: int
-
-@dataclass
-class Connection_event(Event):
-    pass
-
-@dataclass
 class Object:
     id = str(uuid4())
     x: int
@@ -59,9 +46,8 @@ class Game:
     def get_objects(self):
         return [{"x": obj.x, "y": obj.y} for obj in self._objects]
 
-    def handle_event(self, event: Event):
-        if isinstance(event, Click_event):
-            self._objects.append(Object(event.x, event.y))
+    def handle_event(self):
+        pass
 
     def _create_test_scene(self):
         self._objects.append(Object(4, 5))

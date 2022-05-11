@@ -1,0 +1,1 @@
+- mirror server events on frontend
